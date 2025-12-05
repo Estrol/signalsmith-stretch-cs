@@ -110,8 +110,8 @@ jobs:
         with:
           submodules: true
 
-      - name: Install dependencies
-        run: brew install ninja
+      # - name: Install dependencies
+      #   run: brew install ninja
 
       - name: CMake configure (arm64)
         run: cmake -G Ninja -B release-arm64 binding -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0

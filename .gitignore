@@ -1,0 +1,5 @@
+build
+.vscode
+release-x86
+release-x64
+release-arm64

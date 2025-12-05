@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-linux-x64
-          path: release-x64/SignalsmithStretch.so
+          path: release-x64/libSignalsmithStretch.so
 
   linux-arm64:
     name: Linux Arm64
@@ -56,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-linux-arm64
-          path: release/SignalsmithStretch.so
+          path: release/libSignalsmithStretch.so
 
   windows:
     name: Windows
@@ -123,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-osx-arm64
-          path: release-arm64/SignalsmithStretch.dylib
+          path: release-arm64/libSignalsmithStretch.dylib
 
       - name: CMake configure (x64)
         run: cmake -G Ninja -B release-x64 binding -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
@@ -135,4 +135,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-osx-x64
-          path: release-x64/SignalsmithStretch.dylib
+          path: release-x64/libSignalsmithStretch.dylib

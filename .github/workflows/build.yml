@@ -24,7 +24,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-linux-x86
-          path: release-x86/SignalsmithStretch.so
+          path: release-x86/libSignalsmithStretch.so
 
       - name: CMake configure (x64)
         run: cmake -B release-x64 -G Ninja binding -DCMAKE_BUILD_TYPE=Release

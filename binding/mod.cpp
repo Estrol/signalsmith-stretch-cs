@@ -133,6 +133,11 @@ extern "C" {
         stretch->stretch->seek(inBuffer, inputSamples, playbackRate);
     }
 
+    DLL_EXPORT void Stretch_Flush(Stretch* stretch, float* output, int pcmOutLength, double playbackRate) {
+        InterleavedBuffer outBuffer(output, stretch->channels);
+        stretch->stretch->flush(outBuffer, pcmOutLength, playbackRate);
+    }
+
     DLL_EXPORT int Stretch_SeekLength(Stretch* stretch) {
         return stretch->stretch->seekLength();
     }

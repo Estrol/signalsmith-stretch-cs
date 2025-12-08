@@ -7,13 +7,23 @@ using System.Runtime.CompilerServices;
 
 public static class Program
 {
-    static Stretch Stretch;
+    static Stretch? Stretch;
     static unsafe ma_decoder* Decoder = null;
-    static float[] stretchBuffer = new float[4096];
+    static readonly float[] stretchBuffer = new float[4096];
 
     public static void Main(string[] args)
     {
-        Console.WriteLine("Signalsmith Stretch C# Binding Example");
+        string file = AppDomain.CurrentDomain.BaseDirectory + "audio.mp3";
+        if (args.Length > 0)
+        {
+            file = args[0];
+        }
+
+        if (!File.Exists(file))
+        {
+            Console.WriteLine($"Audio file not found: {file}");
+            return;
+        }
 
         unsafe
         {
@@ -35,10 +45,9 @@ public static class Program
 
             ma.device_start(device);
 
-            ma_decoder* decoder = (ma_decoder*)NativeMemory.Alloc((nuint)sizeof(ma_decoder));
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + "audio.mp3";
+            ma_decoder* decoder = (ma_decoder*)NativeMemory.Alloc((nuint)sizeof(ma_decoder));;
             
-            fixed (byte* pFilePath = System.Text.Encoding.UTF8.GetBytes(filePath))
+            fixed (byte* pFilePath = System.Text.Encoding.UTF8.GetBytes(file + "\0"))
             {
                 result = ma.decoder_init_file((sbyte*)pFilePath, null, decoder);
             }
@@ -70,7 +79,7 @@ public static class Program
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     public static unsafe void MACallback(ma_device* device, void* output, void* input, uint frameCount)
     {
-        if (Decoder == null || Stretch.Handle == null)
+        if (Decoder == null || Stretch == null)
         {
             return;
         }

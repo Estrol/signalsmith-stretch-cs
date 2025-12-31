@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-#pragma warning disable IDE0251
-
 namespace Signalsmith
 {
     /// <summary>
@@ -344,11 +342,7 @@ namespace Signalsmith
         }
     }
 
-#if NET7_0_OR_GREATER
     internal static partial class Native
-#else
-    internal static class Native
-#endif
     {
         public const string DllName = "SignalsmithStretch";
 

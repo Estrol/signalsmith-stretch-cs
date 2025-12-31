@@ -1,22 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  	<PropertyGroup>
+		<TargetFrameworks>net462;net8.0</TargetFrameworks>
+		<RootNamespace>SignalsmithStretch-CS</RootNamespace>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Title>Signalsmith-Stretch-CS</Title>
+		<Description>C# wrapper for Signalsmith-Stretch</Description>
+		<PackageTags>audio;time-stretching;pitch-shifting;signalsmith</PackageTags>
+		<RepositoryUrl>https://github.com/Estrol/signalsmith-stretch-cs</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageId>SignalsmithStretch-CS</PackageId>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Authors>Estrol</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.1.0</Version>
+  	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFrameworks>net462;net8.0;net9.0</TargetFrameworks>
-    <RootNamespace>SignalsmithStretch-CS</RootNamespace>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Title>Signalsmith-Stretch-CS</Title>
-    <Description>C# wrapper for Signalsmith-Stretch</Description>
-    <PackageTags>audio;time-stretching;pitch-shifting;signalsmith</PackageTags>
-    <RepositoryUrl>https://github.com/Estrol/signalsmith-stretch-cs</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageId>SignalsmithStretch-CS</PackageId>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Authors>Estrol</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.1.0</Version>
-  </PropertyGroup>
-
-  <ItemGroup>
+  	<ItemGroup>
 		<None Include="$(MSBuildThisFileDirectory)..\native\win-x64\SignalsmithStretch.dll">
 			<PackagePath>runtimes/win-x64/native</PackagePath>
 			<Pack>true</Pack>

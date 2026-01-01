@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace Signalsmith
 {
     /// <summary>
-    /// Dotnet C# binding for Signalsmith FFT
+    /// Dotnet C# binding for Signalsmith's FFT (Fast Fourier Transform) implementation.
     /// </summary>
-    public class FFT
+    public class FFT : IDisposable
     {
         public unsafe void* Handle;
 
@@ -15,25 +15,77 @@ namespace Signalsmith
             unsafe { Handle = Native.FFT_Create(size); }
         }
 
-        public unsafe void Resize(int size)
+        ~FFT()
         {
-            Native.FFT_Resize(Handle, (UIntPtr)size);
+            Release();
         }
 
-        public static int Size()
+        public void Dispose()
         {
-            return (int)Native.FFT_Size();
+            Release();
+            GC.SuppressFinalize(this);
         }
 
-        public static int Steps()
+        public void Release()
         {
-            return (int)Native.FFT_Steps();
+            unsafe
+            {
+                if (Handle != null)
+                {
+                    Native.FFT_Delete(Handle);
+                    Handle = null;
+                }
+            }
+        }
+
+        public void Resize(int size)
+        {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
+                Native.FFT_Resize(Handle, (UIntPtr)size);
+            }
+        }
+
+        public int Size()
+        {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
+                return (int)Native.FFT_Size(Handle);
+            }
+        }
+
+        public int Steps()
+        {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
+                return (int)Native.FFT_Steps(Handle);
+            }
         }
 
         public void Process(float[] inputReal, float[] inputImag, float[] outputReal, float[] outputImag)
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -48,6 +100,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -62,6 +119,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -76,6 +138,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -90,6 +157,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -105,6 +177,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -119,6 +196,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -133,6 +215,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -147,6 +234,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -161,6 +253,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("FFT");
+                }
+
                 fixed (float* inRealPtr = inputReal)
                 fixed (float* inImagPtr = inputImag)
                 fixed (float* outRealPtr = outputReal)
@@ -186,10 +283,10 @@ namespace Signalsmith
         public static unsafe partial void FFT_Resize(void* fft, UIntPtr size);
 
         [LibraryImport(DllName, EntryPoint = "FFT_Size")]
-        public static partial UIntPtr FFT_Size();
+        public static partial UIntPtr FFT_Size(void* fft);
 
         [LibraryImport(DllName, EntryPoint = "FFT_Steps")]
-        public static partial UIntPtr FFT_Steps();
+        public static partial UIntPtr FFT_Steps(void* fft);
 
         [LibraryImport(DllName, EntryPoint = "FFT_Proc")]
         public static unsafe partial void FFT_Proc(void* fft, float* inputReal, float* inputImag, float* outputReal, float* outputImag);
@@ -225,10 +322,10 @@ namespace Signalsmith
         public static extern unsafe void FFT_Resize(void* fft, UIntPtr size);
 
         [DllImport(DllName, EntryPoint = "FFT_Size")]
-        public static extern UIntPtr FFT_Size();
+        public static extern unsafe UIntPtr FFT_Size(void* fft);
 
         [DllImport(DllName, EntryPoint = "FFT_Steps")]
-        public static extern UIntPtr FFT_Steps();
+        public static extern unsafe UIntPtr FFT_Steps(void* fft);
 
         [DllImport(DllName, EntryPoint = "FFT_Proc")]
         public static extern unsafe void FFT_Proc(void* fft, float* inputReal, float* inputImag, float* outputReal, float* outputImag);

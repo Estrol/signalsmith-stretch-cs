@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace Signalsmith
 {
     /// <summary>
-    /// Dotnet C# binding for Signalsmith Dynamic STFT
+    /// Dotnet C# binding for Signalsmith's Dynamic STFT
     /// </summary>
-    public class STFT
+    public class STFT : IDisposable
     {
         public unsafe void* Handle;
 
@@ -16,57 +16,114 @@ namespace Signalsmith
 
         public STFT(bool splitComputation)
         {
-            unsafe {
+            unsafe
+            {
                 Handle = Native.STFT_Create(splitComputation);
+
+                if (Handle == null)
+                {
+                    throw new Exception("Failed to create STFT instance.");
+                }
             }
+        }
+
+        ~STFT()
+        {
+            Release();
+        }
+
+        public void Dispose()
+        {
+            Release();
+            GC.SuppressFinalize(this);
         }
 
         public void Release()
         {
-            unsafe {
-                Native.STFT_Delete(Handle);
-                Handle = null;
+            unsafe
+            {
+                if (Handle != null)
+                {
+                    Native.STFT_Delete(Handle);
+                    Handle = null;
+                }
             }
         }
 
         public void Configure(int inChannels, int outChannels, int blockSamples, int extraInputHistory, int intervalSamples, float asymmetry)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_Configure(Handle, inChannels, outChannels, blockSamples, extraInputHistory, intervalSamples, asymmetry);
             }
         }
 
         public UIntPtr BlockSamples()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_BlockSamples(Handle);
             }
         }
 
         public UIntPtr FFTSamples()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_FFTSamples(Handle);
             }
         }
 
         public UIntPtr Bands()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_Bands(Handle);
             }
         }
 
         public void Reset()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_Reset(Handle);
             }
         }
 
         public void WriteInput(UIntPtr channel, UIntPtr offset, UIntPtr length, float[] inputArray)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* inputPtr = inputArray)
                 {
                     Native.STFT_WriteInput(Handle, channel, offset, length, inputPtr);
@@ -77,7 +134,13 @@ namespace Signalsmith
 #if NET7_0_OR_GREATER
         public void WriteInput(UIntPtr channel, UIntPtr offset, UIntPtr length, Span<float> inputSpan)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* inputPtr = inputSpan)
                 {
                     Native.STFT_WriteInput(Handle, channel, offset, length, inputPtr);
@@ -88,12 +151,23 @@ namespace Signalsmith
 
         public unsafe void WriteInput(UIntPtr channel, UIntPtr offset, UIntPtr length, float* inputPtr)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("STFT");
+            }
+
             Native.STFT_WriteInput(Handle, channel, offset, length, inputPtr);
         }
 
         public void ReadOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, float[] outputArray)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* outputPtr = outputArray)
                 {
                     Native.STFT_ReadOutput(Handle, channel, offset, length, outputPtr);
@@ -104,7 +178,13 @@ namespace Signalsmith
 #if NET7_0_OR_GREATER
         public void ReadOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, Span<float> outputSpan)
         {
-            unsafe {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* outputPtr = outputSpan)
                 {
                     Native.STFT_ReadOutput(Handle, channel, offset, length, outputPtr);
@@ -115,40 +195,75 @@ namespace Signalsmith
 
         public unsafe void ReadOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, float* outputPtr)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("STFT");
+            }
+
             Native.STFT_ReadOutput(Handle, channel, offset, length, outputPtr);
         }
 
         public void MoveInput(UIntPtr samples, bool clearMovedRegion)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_MoveInput(Handle, samples, clearMovedRegion);
             }
         }
 
         public void SetInterval(UIntPtr defaultInterval, int windowShape, float asymmetry)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_SetInterval(Handle, defaultInterval, windowShape, asymmetry);
             }
         }
 
         public void Analyse(UIntPtr sampleInPast)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_Analyse(Handle, sampleInPast);
             }
         }
 
         public void Synthesise()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_Synthesise(Handle);
             }
         }
 
         public float[] Spectrum(UIntPtr channel)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 float* specPtr = Native.STFT_Spectrum(Handle, channel);
                 return new float[] { specPtr[0], specPtr[1] };
             }
@@ -157,7 +272,13 @@ namespace Signalsmith
 #if NET7_0_OR_GREATER
         public void GetSpectrum(UIntPtr channel, Span<float> spectrumSpan)
         {
-            unsafe {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 float* specPtr = Native.STFT_Spectrum(Handle, channel);
                 spectrumSpan[0] = specPtr[0];
                 spectrumSpan[1] = specPtr[1];
@@ -167,7 +288,13 @@ namespace Signalsmith
 
         public float[] AnalysisWindow()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 float* windowPtr = Native.STFT_AnalysisWindow(Handle);
                 int size = (int)BlockSamples();
                 float[] window = new float[size];
@@ -181,7 +308,13 @@ namespace Signalsmith
 
         public float[] SynthesisWindow()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 float* windowPtr = Native.STFT_SynthesisWindow(Handle);
                 int size = (int)BlockSamples();
                 float[] window = new float[size];
@@ -196,7 +329,13 @@ namespace Signalsmith
 #if NET7_0_OR_GREATER
         public bool GetAnalysisWindow(Span<float> windowSpan)
         {
-            unsafe {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 float* windowPtr = Native.STFT_AnalysisWindow(Handle);
                 int size = (int)BlockSamples();
                 if (windowSpan.Length < size)
@@ -211,7 +350,13 @@ namespace Signalsmith
 
         public bool GetSynthesisWindow(Span<float> windowSpan)
         {
-            unsafe {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 float* windowPtr = Native.STFT_SynthesisWindow(Handle);
                 int size = (int)BlockSamples();
                 if (windowSpan.Length < size)
@@ -227,102 +372,186 @@ namespace Signalsmith
 
         public UIntPtr AnalysisLatency()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_AnalysisLatency(Handle);
             }
         }
 
         public UIntPtr SynthesisLatency()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_SynthesisLatency(Handle);
             }
         }
 
         public UIntPtr Latency()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_Latency(Handle);
             }
         }
 
         public float BinToFreq(float b)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_BinToFreq(Handle, b);
             }
         }
 
         public float FreqToBin(float f)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_FreqToBin(Handle, f);
             }
         }
 
         public UIntPtr AnalyseSteps()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_AnalyseSteps(Handle);
             }
         }
 
         public UIntPtr SynthesiseSteps()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_SynthesiseSteps(Handle);
             }
         }
 
         public void AnalyseStep(UIntPtr step, UIntPtr sampleInPast)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_AnalyseStep(Handle, step, sampleInPast);
             }
         }
 
         public void SynthesiseStep(UIntPtr step)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_SynthesiseStep(Handle, step);
             }
         }
 
         public UIntPtr SamplesSinceAnalysis()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_SamplesSinceAnalysis(Handle);
             }
         }
 
         public UIntPtr SamplesSinceSynthesis()
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 return Native.STFT_SamplesSinceSynthesis(Handle);
             }
         }
 
         public void FinishOutput(float strength, UIntPtr offset)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_FinishOutput(Handle, strength, offset);
             }
         }
 
         public void AddOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, float[] outputArray)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* outputPtr = outputArray)
                 {
                     Native.STFT_AddOutput(Handle, channel, offset, length, outputPtr);
                 }
             }
         }
-        
+
 #if NET7_0_OR_GREATER
         public void AddOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, Span<float> outputSpan)
         {
-            unsafe {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* outputPtr = outputSpan)
                 {
                     Native.STFT_AddOutput(Handle, channel, offset, length, outputPtr);
@@ -333,12 +562,23 @@ namespace Signalsmith
 
         public unsafe void AddOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, float* outputPtr)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("STFT");
+            }
+
             Native.STFT_AddOutput(Handle, channel, offset, length, outputPtr);
         }
 
         public void ReplaceOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, float[] outputArray)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* outputPtr = outputArray)
                 {
                     Native.STFT_ReplaceOutput(Handle, channel, offset, length, outputPtr);
@@ -349,7 +589,13 @@ namespace Signalsmith
 #if NET7_0_OR_GREATER
         public void ReplaceOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, Span<float> outputSpan)
         {
-            unsafe {
+            unsafe 
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 fixed (float* outputPtr = outputSpan)
                 {
                     Native.STFT_ReplaceOutput(Handle, channel, offset, length, outputPtr);
@@ -360,26 +606,49 @@ namespace Signalsmith
 
         public unsafe void ReplaceOutput(UIntPtr channel, UIntPtr offset, UIntPtr length, float* outputPtr)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("STFT");
+            }
+
             Native.STFT_ReplaceOutput(Handle, channel, offset, length, outputPtr);
         }
 
         public void MoveOutput(UIntPtr samples)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_MoveOutput(Handle, samples);
             }
         }
 
         public void AnalysisOffset(UIntPtr offset)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_AnalysisOffset(Handle, offset);
             }
         }
 
         public void SynthesisOffset(UIntPtr offset)
         {
-            unsafe {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("STFT");
+                }
+
                 Native.STFT_SynthesisOffset(Handle, offset);
             }
         }

@@ -6,7 +6,7 @@ namespace Signalsmith
     /// <summary>
     /// Dotnet C# binding for Signalsmith Stretch time-stretching and pitch-shifting library.
     /// </summary>
-    public class Stretch
+    public class Stretch : IDisposable
     {
         public unsafe void* Handle;
 
@@ -26,12 +26,26 @@ namespace Signalsmith
             }
         }
 
+        ~Stretch()
+        {
+            Release();
+        }
+
+        public void Dispose()
+        {
+            Release();
+            GC.SuppressFinalize(this);
+        }
+
         public void Release()
         {
             unsafe
             {
-                Native.Release(Handle);
-                Handle = null;
+                if (Handle != null)
+                {
+                    Native.Release(Handle);
+                    Handle = null;
+                }
             }
         }
 
@@ -39,6 +53,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.PresetDefault(Handle, channels, sampleRate, splitComputation);
             }
         }
@@ -47,6 +66,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.PresetCheaper(Handle, channels, sampleRate, splitComputation);
             }
         }
@@ -55,6 +79,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.Configure(Handle, channels, blockSamples, intervalSamples, splitComputation);
             }
         }
@@ -63,6 +92,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.Reset(Handle);
             }
         }
@@ -71,6 +105,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 return Native.InputLatency(Handle);
             }
         }
@@ -79,6 +118,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 return Native.OutputLatency(Handle);
             }
         }
@@ -87,6 +131,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 return Native.BlockSamples(Handle);
             }
         }
@@ -95,6 +144,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 return Native.IntervalSamples(Handle);
             }
         }
@@ -103,6 +157,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 return Native.SplitComputation(Handle);
             }
         }
@@ -110,6 +169,11 @@ namespace Signalsmith
 #if NET7_0_OR_GREATER
         public unsafe void SetFreqMap(delegate* unmanaged<float, float> freqMap)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+
             Native.SetFreqMap(Handle, freqMap);
         }
 #else
@@ -117,6 +181,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.SetFreqMap(Handle, freqMap);
             }
         }
@@ -126,6 +195,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+                
                 Native.SetTransposeSemitones(Handle, semitones, tonalityLimit);
             }
         }
@@ -134,6 +208,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.SetTransposeFactor(Handle, factor, tonalityLimit);
             }
         }
@@ -142,6 +221,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.SetFormantFactor(Handle, multiplier, compensatePitch);
             }
         }
@@ -150,6 +234,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.SetFormantSemitones(Handle, semitones, compensatePitch);
             }
         }
@@ -158,6 +247,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 Native.SetFormantBase(Handle, baseFreq);
             }
         }
@@ -167,6 +261,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 {
                     Native.Seek(Handle, inputPtr, input.Length, playbackRate);
@@ -178,6 +277,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 {
                     Native.Seek(Handle, inputPtr, pcmLength, playbackRate);
@@ -189,6 +293,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 {
                     Native.Seek(Handle, inputPtr, input.Length, playbackRate);
@@ -199,6 +308,11 @@ namespace Signalsmith
 
         public unsafe void Seek(float* input, int pcmLength, double playbackRate)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+
             Native.Seek(Handle, input, pcmLength, playbackRate);
         }
 
@@ -207,6 +321,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* outputPtr = output)
                 {
                     Native.Flush(Handle, outputPtr, output.Length, playbackRate);
@@ -218,6 +337,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* outputPtr = output)
                 {
                     Native.Flush(Handle, outputPtr, pcmOutLength, playbackRate);
@@ -229,6 +353,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* outputPtr = output)
                 {
                     Native.Flush(Handle, outputPtr, pcmOutLength, playbackRate);
@@ -238,6 +367,11 @@ namespace Signalsmith
 #endif
         public unsafe void Flush(float* output, int pcmOutLength, double playbackRate)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+
             Native.Flush(Handle, output, pcmOutLength, playbackRate);
         }
 
@@ -245,6 +379,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 return Native.SeekLength(Handle);
             }
         }
@@ -254,6 +393,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 {
                     Native.OutputSeek(Handle, inputPtr, input.Length);
@@ -265,6 +409,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 {
                     Native.OutputSeek(Handle, inputPtr, input.Length);
@@ -275,6 +424,11 @@ namespace Signalsmith
 
         public unsafe void OutputSeek(float* input, int inputLength)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+
             Native.OutputSeek(Handle, input, inputLength);
         }
 
@@ -291,6 +445,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 fixed (float* outputPtr = output)
                 {
@@ -303,6 +462,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 fixed (float* outputPtr = output)
                 {
@@ -315,6 +479,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 fixed (float* outputPtr = output)
                 {
@@ -327,6 +496,11 @@ namespace Signalsmith
         {
             unsafe
             {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
                 fixed (float* inputPtr = input)
                 fixed (float* outputPtr = output)
                 {
@@ -338,6 +512,11 @@ namespace Signalsmith
 
         public unsafe void Process(float* input, int inPcmLength, float* output, int outPcmLength)
         {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+            
             Native.Process(Handle, input, inPcmLength, output, outPcmLength);
         }
     }

@@ -283,10 +283,10 @@ namespace Signalsmith
         public static unsafe partial void FFT_Resize(void* fft, UIntPtr size);
 
         [LibraryImport(DllName, EntryPoint = "FFT_Size")]
-        public static partial UIntPtr FFT_Size(void* fft);
+        public static unsafe partial UIntPtr FFT_Size(void* fft);
 
         [LibraryImport(DllName, EntryPoint = "FFT_Steps")]
-        public static partial UIntPtr FFT_Steps(void* fft);
+        public static unsafe partial UIntPtr FFT_Steps(void* fft);
 
         [LibraryImport(DllName, EntryPoint = "FFT_Proc")]
         public static unsafe partial void FFT_Proc(void* fft, float* inputReal, float* inputImag, float* outputReal, float* outputImag);

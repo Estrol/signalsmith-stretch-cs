@@ -156,4 +156,10 @@ extern "C" {
         InterleavedBuffer outBuffer(output, stretch->channels);
         stretch->stretch->process(inBuffer, pcmLength, outBuffer, pcmOutLength);
     }
+
+    DLL_EXPORT bool Stretch_Exact(Stretch* stretch, float* input, int pcmLength, float* output, int pcmOutLength) {
+        InterleavedBuffer inBuffer(input, stretch->channels);
+        InterleavedBuffer outBuffer(output, stretch->channels);
+        return stretch->stretch->exact(inBuffer, pcmLength, outBuffer, pcmOutLength);
+    }
 }

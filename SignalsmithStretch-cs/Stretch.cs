@@ -176,7 +176,7 @@ namespace Signalsmith
 
             Native.SetFreqMap(Handle, freqMap);
         }
-#else
+#endif
         public void SetFreqMap(IntPtr freqMap)
         {
             unsafe
@@ -189,7 +189,6 @@ namespace Signalsmith
                 Native.SetFreqMap(Handle, freqMap);
             }
         }
-#endif
 
         public void SetTransposeSemitones(float semitones, float tonalityLimit)
         {
@@ -288,7 +287,7 @@ namespace Signalsmith
                 }
             }
         }
-#else
+#endif
         public void Seek(float[] input, double playbackRate)
         {
             unsafe
@@ -304,7 +303,6 @@ namespace Signalsmith
                 }
             }
         }
-#endif
 
         public unsafe void Seek(float* input, int pcmLength, double playbackRate)
         {
@@ -348,7 +346,7 @@ namespace Signalsmith
                 }
             }
         }
-#else
+#endif
         public void Flush(float[] output, int pcmOutLength, double playbackRate)
         {
             unsafe
@@ -364,7 +362,6 @@ namespace Signalsmith
                 }
             }
         }
-#endif
         public unsafe void Flush(float* output, int pcmOutLength, double playbackRate)
         {
             if (Handle == null)
@@ -389,7 +386,7 @@ namespace Signalsmith
         }
 
 #if NET7_0_OR_GREATER
-        public void OutputSeek(Span<float> input)
+        public void OutputSeek(Span<float> input, int pcmLength)
         {
             unsafe
             {
@@ -400,27 +397,26 @@ namespace Signalsmith
 
                 fixed (float* inputPtr = input)
                 {
-                    Native.OutputSeek(Handle, inputPtr, input.Length);
-                }
-            }
-        }
-#else
-        public void OutputSeek(float[] input)
-        {
-            unsafe
-            {
-                if (Handle == null)
-                {
-                    throw new ObjectDisposedException("Stretch");
-                }
-
-                fixed (float* inputPtr = input)
-                {
-                    Native.OutputSeek(Handle, inputPtr, input.Length);
+                    Native.OutputSeek(Handle, inputPtr, int pcmLength);
                 }
             }
         }
 #endif
+        public void OutputSeek(float[] input, int inputLength)
+        {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
+                fixed (float* inputPtr = input)
+                {
+                    Native.OutputSeek(Handle, inputPtr, inputLength);
+                }
+            }
+        }
 
         public unsafe void OutputSeek(float* input, int inputLength)
         {
@@ -474,7 +470,7 @@ namespace Signalsmith
                 }
             }
         }
-#else 
+#endif 
         public void Process(float[] input, float[] output)
         {
             unsafe
@@ -508,7 +504,6 @@ namespace Signalsmith
                 }
             }
         }
-#endif
 
         public unsafe void Process(float* input, int inPcmLength, float* output, int outPcmLength)
         {
@@ -519,6 +514,49 @@ namespace Signalsmith
             
             Native.Process(Handle, input, inPcmLength, output, outPcmLength);
         }
+
+        public bool Exact(float[] input, int inPcmLength, float[] output, int outPcmLength)
+        {
+            unsafe
+            {
+                if (Handle == null)
+                {
+                    throw new ObjectDisposedException("Stretch");
+                }
+
+                fixed (float* inputPtr = input)
+                fixed (float* outputPtr = output)
+                {
+                    return Native.Exact(Handle, inputPtr, inPcmLength, outputPtr, outPcmLength);
+                }
+            }
+        }
+
+        public unsafe bool Exact(float* input, int inPcmLength, float* output, int outPcmLength)
+        {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+
+            return Native.Exact(Handle, input, inPcmLength, output, outPcmLength);
+        }
+
+#if NET7_0_OR_GREATER
+        public unsafe bool Exact(Span<float> input, int inPcmLength, Span<float> output, int outPcmLength)
+        {
+            if (Handle == null)
+            {
+                throw new ObjectDisposedException("Stretch");
+            }
+
+            fixed (float* inputPtr = input)
+            fixed (float* outputPtr = output)
+            {
+                return Native.Exact(Handle, inputPtr, inPcmLength, outputPtr, outPcmLength);
+            }
+        }
+#endif
     }
 
     internal static partial class Native
@@ -575,6 +613,9 @@ namespace Signalsmith
         public static unsafe partial int OutputSeekLength(void* stretch, float playbackRate);
         [LibraryImport(DllName, EntryPoint = "Stretch_Process")]
         public static unsafe partial void Process(void* stretch, float* input, int pcmLength, float* output, int pcmOutLength);
+        [LibraryImport(DllName, EntryPoint = "Stretch_Exact")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static unsafe partial bool Exact(void* stretch, float* input, int pcmLength, float* output, int pcmOutLength);
 #else
         [DllImport(DllName, EntryPoint = "Stretch_Create")]
         public extern static unsafe void* Create();
@@ -626,6 +667,9 @@ namespace Signalsmith
         public extern static unsafe int OutputSeekLength(void* stretch, float playbackRate);
         [DllImport(DllName, EntryPoint = "Stretch_Process")]
         public extern static unsafe void Process(void* stretch, float* input, int pcmLength, float* output, int pcmOutLength);
+        [DllImport(DllName, EntryPoint = "Stretch_Exact")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public extern static unsafe bool Exact(void* stretch, float* input, int pcmLength, float* output, int pcmOutLength);
 #endif
     }   
 }
